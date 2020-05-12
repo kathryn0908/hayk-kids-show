@@ -6,13 +6,17 @@ class KidsController < ApplicationController
   end
 
   def create
-    @kid = Kid.create({
-      username: params[:kid][:username],
-      description: params[:kid][:description],
-      favorite_color: params[:kid][:favorite_color],
-      age: params[:kid][:age],
-    })
-
-    render json: { kid: @kid }
+    @kid = Kid.create(kid_params)
+    if @kid.save
+       render json: { kid: @kid }
+    else 
+      render json: {error: @kid.errors.messages} 
+    end
   end
+
+  private
+
+  def kid_params
+    params.require(:kid).permit([:username, :age])
+    params.permit(:description, :favorite_color)
 end
